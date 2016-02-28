@@ -1,0 +1,13 @@
+<h2>Adresy:</h2>
+<ul>
+  % for url_name, url in urls.items():
+    <li><a href="{{url}}">{{url_name}}</a></li>
+  % end
+</ul>
+
+<h2>Poslední články:</h2>
+<ul>
+  % for article in articles:
+    <li><a href="{{article.get_absolute_url()}}">{{article.title}}</a></li>
+  % end
+</ul>
