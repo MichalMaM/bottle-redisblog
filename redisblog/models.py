@@ -1,46 +1,41 @@
+import six
+
 from .client import client
 from .settings import URLS_MAPPING
 from .utils import force_text
+
+from .managers import Manager
 
 # TODO: add to redis settings
 PROJECT_PREFIX = 'redisblog'
 
 
-class BaseManagerMixin(object):
+class ModelBase(type):
+    """
+    Metaclass for all models.
+    """
+    def __new__(cls, name, bases, attrs):
+        new_class = super(ModelBase, cls).__new__(cls, name, bases, attrs)
 
-    @classmethod
-    def get_last_objects(cls, offset=0, count=10, keys=None, pipe=None):
-        pipe = pipe or client.pipeline()
-        keys = keys or cls.get_keys()
-        pipe.zrevrange(
-            keys['order_listing'],
-            start=offset,
-            end=offset + count - 1,
-            withscores=True
-        )
-        results = pipe.execute()
+        manager = getattr(new_class, 'objects', Manager(new_class))
+        new_class.objects = manager.__class__(new_class)
 
-        for value, score in results[-1]:
-            pk = int(force_text(value).rsplit('_',)[-1])
-            obj = cls.get_obj(pk, pipe)
-            if not obj:
-                # TODO: add log
-                continue
-            yield obj
+        parents = [b for b in bases if isinstance(b, ModelBase)]
 
-    @classmethod
-    def get_obj(cls, pk, keys_with_id=None, pipe=None):
-        # TODO: check if id exists
-        pipe = pipe or client.pipeline()
-        keys_with_id = keys_with_id or cls.get_keys_with_id(pk)
-        pipe.hgetall(keys_with_id['attrs'])
-        attrs_dict = {force_text(k): v for k, v in pipe.execute()[-1].items()}
-        if not attrs_dict:
-            return None
-        return cls(**attrs_dict)
+        if not parents:
+            return new_class
+
+        fields = {}
+        for parent in parents:
+            if hasattr(parent, 'fields'):
+                fields.update(parent.fields)
+        fields.update(getattr(new_class, 'fields', {}))
+        new_class.fields = fields
+
+        return new_class
 
 
-class BaseModel(BaseManagerMixin):
+class Model(six.with_metaclass(ModelBase)):
     app_name = 'redisblog'
     model_name = None
     pk = None
@@ -133,11 +128,10 @@ class BaseModel(BaseManagerMixin):
             return pipe
 
 
-class Article(BaseModel):
+class Article(Model):
     model_name = 'article'
 
     fields = {
-        'pk': int,
         'title': force_text,
         'content': force_text,
     }

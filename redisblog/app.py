@@ -37,7 +37,7 @@ def create_article_success():
 
 @app.route(URLS_MAPPING['article_delete'])
 def delete_article(pk):
-    article = Article.get_obj(pk)
+    article = Article.objects.get_obj(pk)
     if not article:
         abort(404, "Object not found")
     article.delete()
@@ -55,11 +55,11 @@ def delete_article_success():
 @view('redisblog/templates/article_detail.html')
 @add_base_context()
 def article_detail(pk):
-    article = Article.get_obj(pk)
+    article = Article.objects.get_obj(pk)
     if not article:
         abort(404, "Object not found")
     return {
-        'article': Article.get_obj(pk),
+        'article': Article.objects.get_obj(pk),
     }
 
 
@@ -68,7 +68,7 @@ def article_detail(pk):
 @add_base_context()
 def hp():
     return {
-        'articles': Article.get_last_objects()
+        'articles': Article.objects.get_last_objects()
     }
 
 
