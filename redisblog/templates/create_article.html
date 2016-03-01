@@ -1,5 +1,14 @@
 <form action="." method="post">
-	Title: <input name="title" type="text" /><br />
-	Content: <textarea name="content" placeholder="Insert text..." cols="30" rows="5"></textarea><br />
+	% for field in form:
+    	<p>
+    		%if field.errors:
+    			% for error in field.errors:
+    				<strong style="color: red;">{{!error}}</strong><br />
+    			%end
+    		%end
+        	<strong>{{!field.label}}</strong>
+        	<span>{{!field}}</span> <br />
+    	</p>
+	% end
 	<input value="Add article" type="submit" />
 </form>

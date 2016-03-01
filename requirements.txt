@@ -2,3 +2,4 @@ bottle
 redis
 hiredis
 six
+WTForms==2.1

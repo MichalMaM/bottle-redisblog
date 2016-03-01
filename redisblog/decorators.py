@@ -6,17 +6,21 @@ BASE_CONTEXT = {
 }
 
 
+def get_context(base_context=None, data=None):
+    context = base_context or BASE_CONTEXT
+    data = data or {}
+    final_data = context.copy()
+    final_data.update(data)
+    return final_data
+
+
 def add_base_context(base_context=None):
     """
     Added base variables to template context
     """
     def wrapped_decorator(func):
         def wrapped_func(*args, **kwargs):
-            context = base_context or BASE_CONTEXT
-            data = func(*args, **kwargs)
-            final_data = context.copy()
-            final_data.update(data)
-            return final_data
+            return get_context(base_context, func(*args, **kwargs))
 
         wrapped_func.__dict__ = func.__dict__
         wrapped_func.__doc__ = func.__doc__

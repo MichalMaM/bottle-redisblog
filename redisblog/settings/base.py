@@ -9,6 +9,7 @@ STATIC_ROOT = join(PROJECT_ROOT, 'redisblog', 'static')
 URLS_MAPPING = {
     'hp': '/',
     'article_add': '/article/add/',
+    'article_edit': '/article/edit/<pk:int>/',
     'article_add_success': '/article/add/success/',
     'article_detail': '/article/<pk:int>',
     'article_delete': '/article/delete/<pk:int>',

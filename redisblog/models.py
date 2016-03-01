@@ -78,6 +78,8 @@ class Model(six.with_metaclass(ModelBase)):
         # print(vars(self))
         mapping = {f: func(getattr(self, f)) for f, func in self.fields.items()}
 
+        print(self.fields)
+        print(mapping)
         keys_with_id = self.get_keys_with_id(self.pk)
         pipe.hmset(keys_with_id['attrs'], mapping)
         # TODO: add time instead self.pk as score
@@ -141,3 +143,6 @@ class Article(Model):
 
     def get_delete_url(self):
         return URLS_MAPPING['article_delete'].replace('<pk:int>', str(self.pk))
+
+    def get_edit_url(self):
+        return URLS_MAPPING['article_edit'].replace('<pk:int>', str(self.pk))
