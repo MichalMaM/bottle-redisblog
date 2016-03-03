@@ -1,4 +1,4 @@
-from . import settings
+from redisblog import settings
 
 from redis import Redis
 

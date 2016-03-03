@@ -1,13 +1,13 @@
 import six
 
 from .client import client
-from .settings import URLS_MAPPING
-from .utils import force_text
-
 from .managers import Manager
 
-# TODO: add to redis settings
-PROJECT_PREFIX = 'redisblog'
+from redisblog.settings import PROJECT_PREFIX, FULL_URLS_MAPPING
+
+
+def get_url(url_name, obj):
+    return FULL_URLS_MAPPING[url_name].replace('<pk:int>', str(obj.pk))
 
 
 class ModelBase(type):
@@ -128,21 +128,3 @@ class Model(six.with_metaclass(ModelBase)):
             pipe.execute()
         else:
             return pipe
-
-
-class Article(Model):
-    model_name = 'article'
-
-    fields = {
-        'title': force_text,
-        'content': force_text,
-    }
-
-    def get_absolute_url(self):
-        return URLS_MAPPING['article_detail'].replace('<pk:int>', str(self.pk))
-
-    def get_delete_url(self):
-        return URLS_MAPPING['article_delete'].replace('<pk:int>', str(self.pk))
-
-    def get_edit_url(self):
-        return URLS_MAPPING['article_edit'].replace('<pk:int>', str(self.pk))

@@ -1,8 +1,8 @@
-from .settings import URLS_MAPPING, STATIC_URL
+from redisblog.settings import FULL_URLS_MAPPING, STATIC_URL
 
 BASE_CONTEXT = {
     'STATIC_URL': STATIC_URL,
-    'urls': URLS_MAPPING
+    'urls': FULL_URLS_MAPPING
 }
 
 
